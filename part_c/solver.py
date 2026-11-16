@@ -1,4 +1,3 @@
-# Импортируем стандартные библиотеки
 import csv
 import json
 import random
@@ -12,13 +11,14 @@ DIRECTIONS = {"up": (-1, 0), "right": (0, 1), "down": (1, 0), "left": (0, -1)}
 ARROWS = {"up": "↑", "right": "→", "down": "↓", "left": "←"}
 
 
+# Загружает из JSON карту и все правила игры.
 def load_rules():
     with open(ROOT / "data" / "maps.json", encoding="utf-8") as file:
         return json.load(file)
 
 
+# Находит все клетки карты, кроме стен.
 def get_states(grid, tiles):
-    # Координаты начинаются с 1, как в задании; стена не является состоянием
     states = []
     for row in range(1, len(grid) + 1):
         for column in range(1, len(grid[0]) + 1):
@@ -27,13 +27,14 @@ def get_states(grid, tiles):
     return states
 
 
+# Определяет тип клетки по её координатам.
 def get_tile(grid, state):
     row, column = state
     return grid[row - 1][column - 1]
 
 
+# Показывает, куда попадёт робот после одного движения, учитывая стены и границы.
 def move(grid, state, action, tiles):
-    # При выходе за границу или движении в стену остаёмся на месте
     row, column = state
     dr, dc = DIRECTIONS[action]
     next_row, next_column = row + dr, column + dc
@@ -44,15 +45,14 @@ def move(grid, state, action, tiles):
     return next_row, next_column
 
 
+# Находит возможные результаты одного действия, их вероятности и награды.
 def transitions(grid, state, action, rules):
     tiles = rules["tiles"]
     floor = tiles[get_tile(grid, state)]
-    # После завершения игры новых наград нет
     if floor.get("terminal", False):
         return [(1.0, state, 0, True)]
 
     choices = [(1.0, action)]
-    # Скольжение зависит от клетки, с которой начинается движение
     if floor["movement"] == "slippery":
         if action in ["up", "down"]:
             sides = ["left", "right"]
@@ -66,13 +66,13 @@ def transitions(grid, state, action, rules):
     for probability, direction in choices:
         new_state = move(grid, state, direction, tiles)
         destination = tiles[get_tile(grid, new_state)]
-        # Начисляем награду конечной клетки, включая заблокированный ход
         reward = destination["reward"]
         terminal = destination.get("terminal", False)
         results.append((probability, new_state, reward, terminal))
     return results
 
 
+# Собирает все возможные движения из каждой клетки в одну таблицу.
 def build_model(grid, rules):
     model = {}
     for state in get_states(grid, rules["tiles"]):
@@ -82,18 +82,20 @@ def build_model(grid, rules):
     return model
 
 
+# Проверяет, что движения, вероятности и награды рассчитаны правильно.
 def validate_model(rules):
-    # Проверяем конкретные примеры отдельно от общего обхода модели
     paper = rules["paper_map"]
     extended = rules["extended_map"]
     checks = []
 
+    # Записывает результат проверки и сообщает об ошибке, если она не пройдена.
     def check(name, condition, details):
         status = "PASS" if condition else "FAIL"
         checks.append(f"{status}: {name}: {details}")
         if not condition:
             raise AssertionError(checks[-1])
 
+    # Сравнивает рассчитанный переход с заранее известным правильным ответом.
     def expect(name, grid, state, action, expected):
         actual = transitions(grid, state, action, rules)
         check(name, actual == expected, f"{state}, {action} -> {actual}")
@@ -139,17 +141,17 @@ def validate_model(rules):
     return checks
 
 
+# Вычисляет, насколько выгодно одно действие с учётом будущих наград.
 def action_value(outcomes, values, discount):
     total = 0.0
     for probability, next_state, reward, terminal in outcomes:
-        # После терминального перехода будущая ценность равна нулю
         future = 0 if terminal else values[next_state]
         total += probability * (reward + discount * future)
     return total
 
 
+# За одну итерацию находит лучшую ценность для каждой клетки.
 def update_values(grid, model, values, rules):
-    # Создаём новый словарь: весь раунд использует только прошлые значения
     new_values = {}
     for state in model:
         if rules["tiles"][get_tile(grid, state)].get("terminal", False):
@@ -162,6 +164,7 @@ def update_values(grid, model, values, rules):
     return new_values
 
 
+# Выбирает лучшее направление движения из каждой клетки.
 def extract_policy(grid, model, values, rules):
     policy = {}
     ties = {}
@@ -172,7 +175,6 @@ def extract_policy(grid, model, values, rules):
         for action in rules["actions"]:
             scores[action] = action_value(model[state][action], values, rules["discount"])
         best = max(scores.values())
-        # Разницу до 1e-12 считаем погрешностью вычислений; порядок задан в JSON
         tied_actions = []
         for action in rules["actions"]:
             if abs(scores[action] - best) <= 1e-12:
@@ -182,6 +184,7 @@ def extract_policy(grid, model, values, rules):
     return policy, ties
 
 
+# Повторяет расчёты до сходимости и находит итоговую стратегию робота.
 def solve(grid, rules):
     model = build_model(grid, rules)
     values = dict.fromkeys(model, rules["initial_value"])
@@ -204,6 +207,7 @@ def solve(grid, rules):
     }
 
 
+# Показывает рассчитанные ценности клеток в виде карты.
 def value_map(grid, values):
     lines = []
     for row in range(1, len(grid) + 1):
@@ -218,6 +222,7 @@ def value_map(grid, values):
     return "\n".join(lines)
 
 
+# Показывает лучшие направления движения на карте стрелками.
 def policy_map(grid, policy):
     lines = []
     for row in range(1, len(grid) + 1):
@@ -232,6 +237,7 @@ def policy_map(grid, policy):
     return "\n".join(lines)
 
 
+# Готовит расчёты V1 и V2 и сравнивает их с ручными ответами.
 def paper_calculations(solution, rules):
     v1, v2 = solution["first_rounds"]
     lines = ["Computed values for the original map", "V1:", value_map(rules["paper_map"], v1)]
@@ -250,7 +256,6 @@ def paper_calculations(solution, rules):
             lines.append(f"  {action}: {' + '.join(terms)} = {score:.6f}")
         best_actions = [action for action in rules["actions"] if abs(scores[action] - v2[state]) <= 1e-12]
         lines.append(f"  V2 = {v2[state]:.6f}; best actions: {', '.join(best_actions)}")
-    # Сравниваем с ответами, которые студент подтвердил в сообщении
     lines.append("\nPaper comparison: handwritten V1 and V2 answers checked and supplied by the student.")
     lines.append("MATCH: the handwritten V1 matches the computed V1 at every nonterminal position.")
     lines.append("The handwritten G and H labels represent terminal states with value 0, matching the program.")
@@ -289,8 +294,8 @@ def paper_calculations(solution, rules):
     return "\n".join(lines) + "\n"
 
 
+# Случайно выбирает один результат движения с учётом вероятностей.
 def sample_transition(outcomes, generator):
-    # Используем отдельный генератор с seed для каждой игры
     draw = generator.random()
     cumulative = 0.0
     for outcome in outcomes:
@@ -300,6 +305,7 @@ def sample_transition(outcomes, generator):
     return outcomes[-1]
 
 
+# Проводит одно прохождение робота от старта до завершения.
 def run_episode(grid, model, policy, rules, episode_seed):
     generator = random.Random(episode_seed)
     state = next(state for state in model if get_tile(grid, state) == "S")
@@ -312,7 +318,6 @@ def run_episode(grid, model, policy, rules, episode_seed):
         total_reward += reward
         discounted_return += rules["discount"] ** (step - 1) * reward
         state = new_state
-        # Проверяем цель и яму до проверки лимита шагов
         tile = get_tile(grid, state)
         if tile == "G":
             outcome = "Goal"
@@ -325,6 +330,7 @@ def run_episode(grid, model, policy, rules, episode_seed):
             "final_row": state[0], "final_column": state[1]}
 
 
+# Запускает много прохождений и считает общие результаты.
 def simulate(name, grid, solution, rules):
     episodes = []
     summary = []
@@ -351,6 +357,7 @@ def simulate(name, grid, solution, rules):
     return episodes, summary
 
 
+# Сохраняет результаты программы в CSV-файл.
 def write_csv(filename, rows):
     with open(OUTPUT_DIR / filename, "w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=list(rows[0]))
@@ -358,6 +365,7 @@ def write_csv(filename, rows):
         writer.writerows(rows)
 
 
+# Запускает все этапы программы и сохраняет итоговые результаты.
 def main():
     rules = load_rules()
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -380,7 +388,6 @@ def main():
         (OUTPUT_DIR / f"part_c_{name}_policy.txt").write_text(policy_text, encoding="utf-8")
         convergence.append({"map": name, "iterations": solution["iterations"],
                             "final_change": solution["delta"], "converged": solution["converged"]})
-        # Проверяем остаточную ошибку и нулевые значения терминальных клеток
         updated = update_values(grid, solution["model"], solution["values"], rules)
         residual = max(abs(updated[state] - solution["values"][state]) for state in updated)
         if solution["converged"]:
