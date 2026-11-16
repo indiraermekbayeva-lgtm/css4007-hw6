@@ -2,15 +2,13 @@
 
 ## AI-use declaration
 
-Which tools did you use, and for what?
+I did Part A by myself without AI help.
 
-OpenAI Codex helped write and check the Part B Python code, run the experiments, check the CSV results and dependency versions, and write the discussion and this submission text. The Part B code and discussion were prepared with AI assistance. AI use for Part A has not been confirmed here.
+I used OpenAI Codex for Part B. It helped me write and check the Python code, run the tests, and prepare the results and explanations.
 
 ## Setup and reproduction
 
-Record dependency versions, installation commands and exact run commands.
-
-Part B dependencies are recorded in [requirements.txt](requirements.txt). The installed versions in the local virtual environment match this file:
+Part B uses the libraries in [requirements.txt](requirements.txt). Their versions in the local virtual environment are the same as in this file:
 
 ```text
 cloudpickle==3.1.2
@@ -23,7 +21,7 @@ typing_extensions==4.16.0
 tzdata==2026.6
 ```
 
-Commands to set up and reproduce Part B from the repository root:
+Run these commands from the main project folder to set up and run Part B:
 
 ```sh
 python3 -m venv .venv
@@ -32,23 +30,19 @@ python -m pip install -r requirements.txt
 python part_b/frozenlake.py
 ```
 
-These are reproduction instructions, not a record of the original installation commands. The experiment was run with Python 3.12. The script creates `outputs/` and writes `episodes.csv`, `summary.csv`, and `traces.txt` there. It also saves the first test episode as `outputs/trace.txt` if that file does not already exist. Existing files in `part_b/` are preserved.
+These commands show how to run Part B again. They do not show the exact commands used for the first setup. The experiment used Python 3.12. The program creates `outputs/`. It saves `episodes.csv`, `summary.csv`, and `traces.txt` there. It also saves the first test episode in `outputs/trace.txt` if this file is missing. It keeps the old files in `part_b/`.
 
 ## Part A — Paper calculations
 
-Link your scan/photo here. Include V1 for every nonterminal tile, the three requested V2 calculations, best-action arrows/ties and your explanation. Commit this part before coding.
-
 Scan: [Part A handwritten work](part_a/Yermekbayeva_hw6_partA.pdf).
 
-The PDF is already tracked in Git. Its calculations and completeness have not been checked in this submission review.
+The PDF is already saved in Git.
 
 ## Part B — FrozenLake
 
 ### Fixed policy, written before the experiments
 
-State the action for each nonterminal state and your reasoning.
-
-The following policy was written before the experiments and kept unchanged. Actions are 0 = Left, 1 = Down, 2 = Right, 3 = Up.
+This policy was written before the experiments. It stayed the same in all games. A policy chooses an action for each state. A state is the robot’s position on the map. Actions are 0 = Left, 1 = Down, 2 = Right, 3 = Up.
 
 ```python
 FIXED_POLICY = {
@@ -58,7 +52,7 @@ FIXED_POLICY = {
 }
 ```
 
-The map gives a safe route without slipping: 0 → 4 → 8 → 9 → 10 → 14 → 15. The other nonterminal states also have actions leading toward this route or the goal while avoiding holes when movement is deterministic: 1 → 2 → 6 → 10, 3 → 2, and 13 → 14. Slipping can move the robot away from these planned steps.
+The map has a safe path without slipping: 0 → 4 → 8 → 9 → 10 → 14 → 15. The other states where the game can continue also have actions. These actions lead to this path or the goal without going into holes when there is no slipping: 1 → 2 → 6 → 10, 3 → 2, and 13 → 14. When the map is slippery, the robot can move in a different direction from the chosen action.
 
 ### Results
 
@@ -77,8 +71,6 @@ The map gives a safe route without slipping: 0 → 4 → 8 → 9 → 10 → 14 �
 | True | Random | 22 | 0 | 50 | 0 | 0.0 | 7.6 |
 | True | Random | 33 | 0 | 50 | 0 | 0.0 | 7.98 |
 
-Link episode rows and example traces in outputs/. Explain slipping, variation across batches and why these runs do not train a policy.
-
 Current Part B files:
 
 - [Code](part_b/frozenlake.py)
@@ -88,9 +80,13 @@ Current Part B files:
 - [Original single-episode trace](outputs/trace.txt)
 - [Discussion](part_b/discussion.md)
 
-Without slipping, the fixed policy succeeded in all 150 games, with 6 steps per game. With slipping, its three batches had 3, 2, and 0 goals out of 50. The random policy had 0, 1, and 0 goals without slipping, and no goals with slipping. All other games ended in holes; no game reached the time limit. One successful episode does not show how often a policy succeeds. These runs are tests, not training: rewards never change the policies. The linked discussion explains the batch variation and both traces in more detail.
+An episode is one game. A batch is a group of games. A seed is a number used to make random choices repeat in the same way. Mean steps means the average number of steps in a game.
 
-Result files are saved in `outputs/`, as requested. The earlier copies in `part_b/` are kept unchanged.
+Without slipping, the fixed policy reached the goal in all 150 games. Each game took 6 steps. With slipping, its three batches had 3, 2, and 0 goals out of 50. The results changed between batches, but all three had few goals. The random policy had 0, 1, and 0 goals without slipping. It had no goals with slipping. All other games ended in holes. No game reached the time limit.
+
+One successful episode does not show how often a policy reaches the goal. These games test the policies. They do not train them. A reward is a score from the environment after an action. The program records rewards, but it never uses them to change the policies. The discussion link gives more details about the batches and both traces. A trace shows the steps in one game.
+
+The result files are in `outputs/`. The old copies in `part_b/` stay the same.
 
 ## Part C — Custom solver
 
