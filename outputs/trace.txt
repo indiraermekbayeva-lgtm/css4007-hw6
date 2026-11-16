@@ -1,0 +1,9 @@
+Step 1: state 0, action 1, new state 4, reward 0
+Step 2: state 4, action 1, new state 8, reward 0
+Step 3: state 8, action 2, new state 9, reward 0
+Step 4: state 9, action 2, new state 10, reward 0
+Step 5: state 10, action 1, new state 14, reward 0
+Step 6: state 14, action 2, new state 15, reward 1
+Outcome: Goal
+Steps: 6
+Total reward: 1

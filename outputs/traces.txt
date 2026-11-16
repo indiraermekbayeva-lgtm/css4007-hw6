@@ -1,0 +1,76 @@
+Successful episode: slippery=False, policy=Fixed, episode_seed=11000
+Episode start ([ ] marks the robot position):
+[S] F F F
+F H F H
+F F F H
+H F F G
+Step 1: state 0, action 1, new state 4, reward 0
+S F F F
+[F] H F H
+F F F H
+H F F G
+Step 2: state 4, action 1, new state 8, reward 0
+S F F F
+F H F H
+[F] F F H
+H F F G
+Step 3: state 8, action 2, new state 9, reward 0
+S F F F
+F H F H
+F [F] F H
+H F F G
+Step 4: state 9, action 2, new state 10, reward 0
+S F F F
+F H F H
+F F [F] H
+H F F G
+Step 5: state 10, action 1, new state 14, reward 0
+S F F F
+F H F H
+F F F H
+H F [F] G
+Step 6: state 14, action 2, new state 15, reward 1
+S F F F
+F H F H
+F F F H
+H F F [G]
+Outcome: Goal, steps: 6, reward: 1
+
+Failed episode: slippery=False, policy=Random, episode_seed=11000
+Episode start ([ ] marks the robot position):
+[S] F F F
+F H F H
+F F F H
+H F F G
+Step 1: state 0, action 0, new state 0, reward 0
+[S] F F F
+F H F H
+F F F H
+H F F G
+Step 2: state 0, action 3, new state 0, reward 0
+[S] F F F
+F H F H
+F F F H
+H F F G
+Step 3: state 0, action 2, new state 1, reward 0
+S [F] F F
+F H F H
+F F F H
+H F F G
+Step 4: state 1, action 0, new state 0, reward 0
+[S] F F F
+F H F H
+F F F H
+H F F G
+Step 5: state 0, action 2, new state 1, reward 0
+S [F] F F
+F H F H
+F F F H
+H F F G
+Step 6: state 1, action 1, new state 5, reward 0
+S F F F
+F [H] F H
+F F F H
+H F F G
+Outcome: Hole, steps: 6, reward: 0
+
