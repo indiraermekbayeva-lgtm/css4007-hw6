@@ -9,7 +9,7 @@ python3 part_c/solver.py
 python3 part_c/check_solver.py
 ```
 
-The code uses Python 3.12.0 and only the standard library. No extra packages are needed for Part C. The output is in English. Important code comments are in Russian.
+The code uses Python 3.12.0 and only the standard library. No extra packages are needed for Part C.
 
 ## 1. Read the map and floor rules
 
