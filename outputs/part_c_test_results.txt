@@ -1,0 +1,14 @@
+PASS: synchronous V1 and V2 match direct calculations from the rules.
+PASS: paper: saved maps match; all policy actions maximize the final scores; residual=1.94876386139e-08.
+PASS: extended: saved maps match; all policy actions maximize the final scores; residual=2.16529314478e-08.
+PASS: independent policy equations: ice=5.824175824, original start=1.535824176, extended start=1.502000000.
+PASS: convergence threshold and iteration safeguard work.
+PASS: Goal and Hole on the last allowed step override Time limit.
+PASS: exact step 100 handles Goal, Hole and Time limit correctly.
+PASS: discounted return is -1 + 0.9 * 10 = 8 on a two-step test.
+PASS: equal action scores choose Up first.
+PASS: ice slips at a boundary keep the correct probabilities and rewards.
+PASS: saved outcomes match final tiles; every extended route has 5 steps, reward 4 and discounted return 1.502.
+PASS: CSV outcome counts and both means match the raw episode rows.
+PASS: 300 episodes, 6 batches, correct seeds, step limits and repeatable results.
+PASS: all saved summaries match independently repeated simulations.

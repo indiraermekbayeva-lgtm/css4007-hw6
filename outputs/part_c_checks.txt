@@ -1,0 +1,25 @@
+PASS: Boundary stays in place: (1, 1), up -> [(1.0, (1, 1), -1, False)]
+PASS: Wall stays in place: (2, 1), right -> [(1.0, (2, 1), -1, False)]
+PASS: Blocked mud move costs -3: (1, 2), down -> [(1.0, (1, 2), -3, False)]
+PASS: Entering mud costs -3: (1, 1), right -> [(1.0, (1, 2), -3, False)]
+PASS: Entering sand costs -2: (3, 1), right -> [(1.0, (3, 2), -2, False)]
+PASS: Entering water costs -5: (3, 3), right -> [(1.0, (3, 4), -5, False)]
+PASS: Sand movement is deterministic: (3, 2), right -> [(1.0, (3, 3), -1, False)]
+PASS: Water movement is deterministic: (3, 4), left -> [(1.0, (3, 3), -1, False)]
+PASS: Blocked water move costs -5: (3, 4), right -> [(1.0, (3, 4), -5, False)]
+PASS: Goal gives +10 with no floor cost: (1, 3), right -> [(1.0, (1, 4), 10, True)]
+PASS: Hole gives -10: (3, 4), up -> [(1.0, (2, 4), -10, True)]
+PASS: Entering ice does not cause slipping: (3, 3), up -> [(1.0, (2, 3), -1, False)]
+PASS: Ice up resolves wall and hole separately: (2, 3), up -> [(0.8, (1, 3), -1, False), (0.1, (2, 3), -1, False), (0.1, (2, 4), -10, True)]
+PASS: paper: wall is not a state: 11 states, including 2 terminals
+PASS: paper: state count: 11
+PASS: paper: all transition probabilities: sum to 1; valid destinations and terminal flags
+PASS: paper: all ice actions: intended 0.8, perpendicular 0.1 and 0.1
+PASS: paper: no rewards after termination: G and H stay terminal with reward 0 for every action
+PASS: extended: wall is not a state: 11 states, including 2 terminals
+PASS: extended: state count: 11
+PASS: extended: all transition probabilities: sum to 1; valid destinations and terminal flags
+PASS: extended: all ice actions: intended 0.8, perpendicular 0.1 and 0.1
+PASS: extended: no rewards after termination: G and H stay terminal with reward 0 for every action
+PASS: paper: terminal values 0 and no terminal actions; Bellman residual=1.94876386139e-08
+PASS: extended: terminal values 0 and no terminal actions; Bellman residual=2.16529314478e-08

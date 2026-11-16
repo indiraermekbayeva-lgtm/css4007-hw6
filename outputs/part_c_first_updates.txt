@@ -1,0 +1,55 @@
+Computed values for the original map
+V1:
+ -1.000000  -1.000000  10.000000   0.000000
+ -1.000000          #  -1.000000   0.000000
+ -1.000000  -1.000000  -1.000000  -1.000000
+
+V2 at (1, 2), using only V1:
+  up: 1 * (-3 + 0.9 * -1) = -3.900000
+  right: 1 * (-1 + 0.9 * 10) = 8.000000
+  down: 1 * (-3 + 0.9 * -1) = -3.900000
+  left: 1 * (-1 + 0.9 * -1) = -1.900000
+  V2 = 8.000000; best actions: right
+
+V2 at (1, 3), using only V1:
+  up: 1 * (-1 + 0.9 * 10) = 8.000000
+  right: 1 * (10 + 0.9 * 0) = 10.000000
+  down: 1 * (-1 + 0.9 * -1) = -1.900000
+  left: 1 * (-3 + 0.9 * -1) = -3.900000
+  V2 = 10.000000; best actions: right
+
+V2 at (2, 3), using only V1:
+  up: 0.8 * (-1 + 0.9 * 10) + 0.1 * (-1 + 0.9 * -1) + 0.1 * (-10 + 0.9 * 0) = 5.210000
+  right: 0.8 * (-10 + 0.9 * 0) + 0.1 * (-1 + 0.9 * 10) + 0.1 * (-1 + 0.9 * -1) = -7.390000
+  down: 0.8 * (-1 + 0.9 * -1) + 0.1 * (-1 + 0.9 * -1) + 0.1 * (-10 + 0.9 * 0) = -2.710000
+  left: 0.8 * (-1 + 0.9 * -1) + 0.1 * (-1 + 0.9 * 10) + 0.1 * (-1 + 0.9 * -1) = -0.910000
+  V2 = 5.210000; best actions: up
+
+Paper comparison: handwritten V1 and V2 answers checked and supplied by the student.
+MATCH: the handwritten V1 matches the computed V1 at every nonterminal position.
+The handwritten G and H labels represent terminal states with value 0, matching the program.
+MATCH: (1, 2): paper V2 about 8, right; code 8.000000, right.
+MATCH: (1, 3): paper V2 about 10, right; code 10.000000, right.
+MATCH: (2, 3): paper V2 about 5.21, up; code 5.210000, up.
+
+V1 match and rule explanation:
+The full handwritten V1 table matches the computed table, including terminal states.
+V0 is zero. V1 uses only the expected reward of one move. The future term 0.9 * V0 is zero.
+The reward belongs to the destination tile, not the tile the robot leaves.
+At (1,2), leaving mud to the left or right gives -1, so V1 is -1, not the mud entry cost -3.
+At (1,3), Right enters G and gives +10, so V1 is 10. There is no extra floor cost.
+G and H themselves keep value 0. The +10 and -10 rewards are paid on entry only.
+At ice (2,3), the V1 action scores are Up=-1.9, Right=-8.2, Down=-1.9, Left=-1.
+For Left: 0.8 * (-1) + 0.1 * (-1) + 0.1 * (-1) = -1.
+The intended Left move hits the wall, so it stays on ice and still gives -1.
+The two side moves go Up and Down to ordinary floor and each give -1.
+Thus V1 on ice is -1. Slipping depends on the source tile and is checked for each possible move.
+Every other nonterminal tile can choose a certain move ending on ordinary floor or S for reward -1.
+These tiles cannot reach G in one move. Their V1 values are therefore -1.
+This explains why both the handwritten and computed V1 tables follow the rules.
+V2 uses this V1 table. The ice Up score is 0.8 * 8 + 0.1 * (-1.9) + 0.1 * (-10) = 5.21.
+The V1 ice best action is Left, but the V2 ice best action is Up because future rewards now matter.
+All three supplied handwritten V2 values and actions match the code.
+The matching handwritten V2 answers are 8 Right, 10 Right, and approximately 5.21 Up.
+There are no discrepancies between the handwritten and computed V1 and V2 results.
+The handwritten PDF and the solver's transition and value-update rules are unchanged.
